@@ -34,6 +34,7 @@ func TestGetTransactionWithItemsIntegration(t *testing.T) {
 
 	tx := db.Begin()
 	defer tx.Rollback()
+	// roolback adalah untuk membatalkan transaksi
 	// Set up router
 	router := gin.Default()
 	router.GET("/transactions/:id", GetTransactionWithItems(db))
