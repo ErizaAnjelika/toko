@@ -23,25 +23,45 @@ func main() {
 
 	router := gin.Default()
 
+	// Tambahkan prefix API
+	api := router.Group("/api/v1")
+
 	// Rute CRUD Produk
-	router.GET("/products", middlewares.AuthMiddleware(), handlers.ListProducts(db))
-	router.GET("/products/:id", handlers.GetProduct(db))
-	router.POST("/products", handlers.CreateProduct(db))
-	router.PUT("/products/:id", handlers.UpdateProduct(db))
-	router.DELETE("/products/:id", handlers.DeleteProduct(db))
+	api.GET("/products", middlewares.AuthMiddleware("admin"), handlers.ListProducts(db))
+	api.GET("/products/:id", middlewares.AuthMiddleware("admin"), handlers.GetProduct(db))
+	api.POST("/products", middlewares.AuthMiddleware("admin"), handlers.CreateProduct(db))
+	api.PUT("/products/:id", middlewares.AuthMiddleware("admin"), handlers.UpdateProduct(db))
+	api.DELETE("/products/:id", middlewares.AuthMiddleware("admin"), handlers.DeleteProduct(db))
 
 	// Rute CRUD Product Category
-	router.GET("/product-categories", handlers.ListProductCategories(db))
-	router.GET("/product-categories/:id", handlers.GetProductCategory(db))
-	router.POST("/product-categories", handlers.CreateProductCategory(db))
-	router.PUT("/product-categories/:id", handlers.UpdateProductCategory(db))
-	router.DELETE("/product-categories/:id", handlers.DeleteProductCategory(db))
+	api.GET("/product-categories", middlewares.AuthMiddleware("admin"), handlers.ListProductCategories(db))
+	api.GET("/product-categories/:id", middlewares.AuthMiddleware("admin"), handlers.GetProductCategory(db))
+	api.POST("/product-categories", middlewares.AuthMiddleware("admin"), handlers.CreateProductCategory(db))
+	api.PUT("/product-categories/:id", middlewares.AuthMiddleware("admin"), handlers.UpdateProductCategory(db))
+	api.DELETE("/product-categories/:id", middlewares.AuthMiddleware("admin"), handlers.DeleteProductCategory(db))
 
-	router.POST("/transactions", handlers.CreateTransaction(db))
-	router.GET("/transactions/:id", handlers.GetTransactionWithItems(db))
+	// rute CRUD StokProduct
+	api.GET("/StokProducts", middlewares.AuthMiddleware(), handlers.ListStok(db))
+	api.GET("/StokProducts/:id", middlewares.AuthMiddleware(), handlers.GetStokProduct(db))
+	api.POST("/StokProducts", middlewares.AuthMiddleware(), handlers.CreateStokProduct(db))
+	api.PUT("/StokProducts/:id", middlewares.AuthMiddleware(), handlers.UpdateStokProduct(db))
+	api.DELETE("/StokProducts/:id", middlewares.AuthMiddleware(), handlers.DeleteStokProduct(db))
 
-	router.POST("/login", handlers.Login(db))
-	router.POST("/register", handlers.Register(db))
+	// Rute Transaksi
+	api.POST("/transactions", middlewares.AuthMiddleware(), handlers.CreateTransaction(db))
+	api.GET("/transactions/:id", middlewares.AuthMiddleware(), handlers.GetTransactionWithItems(db))
+	api.GET("/transactions", middlewares.AuthMiddleware(), handlers.ListTransactions(db))
+
+	// Rute Chart
+	api.GET("/chart/sales-by-date", middlewares.AuthMiddleware(), handlers.GetSalesByDate(db))
+	api.GET("/chart/top-selling-products", middlewares.AuthMiddleware(), handlers.GetTopSellingProducts(db))
+
+	// rute user
+	api.GET("/users", middlewares.AuthMiddleware("admin"), handlers.ListUsers(db))
+	api.POST("/register", middlewares.AuthMiddleware("admin"), handlers.Register(db))
+
+	// Rute Auth
+	api.POST("/login", handlers.Login(db))
 
 	router.GET("/debug/pprof/*pprof", gin.WrapH(http.DefaultServeMux))
 

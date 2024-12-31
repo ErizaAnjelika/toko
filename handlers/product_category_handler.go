@@ -11,7 +11,7 @@ func ListProductCategories(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var categories []models.ProductCategory
 		db.Find(&categories)
-		c.JSON(200, categories)
+		c.JSON(200, gin.H{"data": categories})
 	}
 }
 
@@ -23,7 +23,7 @@ func GetProductCategory(db *gorm.DB) gin.HandlerFunc {
 			c.JSON(404, gin.H{"message": "Category not found"})
 			return
 		}
-		c.JSON(200, category)
+		c.JSON(200, gin.H{"data": category})
 	}
 }
 
@@ -41,7 +41,7 @@ func CreateProductCategory(db *gorm.DB) gin.HandlerFunc {
 		}
 
 		db.Create(&input)
-		c.JSON(201, input)
+		c.JSON(201, gin.H{"message": "Category created successfully", "data": input})
 	}
 }
 
@@ -61,7 +61,7 @@ func UpdateProductCategory(db *gorm.DB) gin.HandlerFunc {
 		}
 
 		db.Model(&category).Updates(input)
-		c.JSON(200, category)
+		c.JSON(200, gin.H{"message": "Category updated successfully", "data": category})
 	}
 }
 
